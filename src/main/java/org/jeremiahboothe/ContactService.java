@@ -1,59 +1,66 @@
 package org.jeremiahboothe;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Created as a Singleton, ContactService, handles the operations and creation of the map and hashmap. Upon instantiation the constructor creates the Hashmap.
+ * Created as a Singleton, ContactService, handles the operations and creation of the map and hashmap. Upon initialization the constructor instantiates the Hashmap.
  */
 public class ContactService {
+    // Other fields and methods remain unchanged
+    private final HashMap<String, Contact> contactMap;
     private String currentContactID;
-    private static final HashMap<String, Contact> contactMap = new HashMap<>();
-
-    private static final ContactService contactService = new ContactService(contactMap);
+    private static final ContactService contactService = new ContactService();
 
     /**
-     * Constructs ContactService with HashMap to store the UniqueID's as the key and Contact objects as values.
+     * Constructor for ContactService instantiates contactMap when constructed.
      */
-    private ContactService(HashMap<String, Contact> contactMap) {
-
+    private ContactService() {
+        this.contactMap = new HashMap<>();
     }
 
     /**
-     * @return newID
+     * Retrieves contactService to operate as a singleton.
+     * @return ContactService contactService
      */
-    public static String generateUniqueID() {
-        AtomicInteger contactIDGenerator = new AtomicInteger();
+    static ContactService getInstance() {
+        return contactService;
+    }
+    /**
+     * Checks map for equivalent ID uses Long to generate a unique ID and compares the value of the String to the keys of the HashMap to determine if that key already exists, if not that ID is used, if it does exist, a new ID is created until one is found that does not exist.
+     * @return newID When id not found.
+     */
+    static String generateUniqueID() {
+        AtomicLong contactIDGenerator = new AtomicLong();
         String newId;
         do {
             // Generate a new unique ID passing over any that already exist in the contact map
             newId = String.valueOf(contactIDGenerator.incrementAndGet());
-        } while (contactMap.containsKey(newId)); // Check if the ID already exists in the map
+        } while (contactService.contactMap.containsKey(newId)); // Check if the ID already exists in the map
         return newId;
     }
 
     /**
-     *
+     * Stores active contactID for reference to add & update Contacts
      * @param newID
      */
-    private void setCurrentContactID(String newID) {
+    void setCurrentContactID(String newID) {
         this.currentContactID = newID;
     }
 
     /**
-     *
+     * Retrieves the ID of the currently active contact.
      * @return currentContactID
      */
-    public String getCurrentContactID() {
+    String getCurrentContactID() {
         return currentContactID;
     }
-
     /**
-     * @param firstName
-     * @param lastName
-     * @param phoneNumber
-     * @param address
+     * Generates a uniqueID if user did not input an ID, creates new Contact with ID, adds the Contact to the Map, and sets currentContactID to newID as reference.
+     * @param firstName User input First Name of Contact
+     * @param lastName User input Last Name of Contact
+     * @param phoneNumber User input Phone Number of Contact
+     * @param address User input Address of Contact
      * @return new Contact
      */
     Contact addContact(String firstName,
@@ -72,23 +79,22 @@ public class ContactService {
     }
 
     /**
-     * @param userID
-     * @param firstName
-     * @param lastName
-     * @param phoneNumber
-     * @param address
+     * Adds Contact when user inputs preferred ID
+     * @param userID User Input ID of Contact
+     * @param firstName User Input First Name of Contact
+     * @param lastName User Input Last Name of Contact
+     * @param phoneNumber User Input Phone Number of Contact
+     * @param address User Input Address of Contact
      * @return new Contact
      */
     Contact addContact(String userID,
                        String firstName,
                        String lastName,
                        String phoneNumber,
-                       String address) throws IllegalArgumentException {
+                       String address) {
         if (contactMap.containsKey(userID)) {
-            System.out.println("There's already a value there!");
-            throw new IllegalArgumentException("ILLEGAL!");
+            throw new IllegalArgumentException("Contact ID: " + userID + " already exists!");
         }
-
         Contact contact = new Contact(userID,
                 firstName,
                 lastName,
@@ -100,77 +106,65 @@ public class ContactService {
     }
 
     /**
-     * @return contactMap
+     * Retrieves Contact by ID
+     * @param contactID ID of Contact
+     * @return Contact
      */
-    public Map<String, Contact> getAllContacts() {
-        return contactMap;
-    }
-
-    /**
-     * @return contactService
-     */
-    public static ContactService getInstance() {
-        return contactService;
-    }
-
-    /**
-     * @param contactID
-     * @return contactMap
-     */
-    public Contact getContactById(String contactID) {
+    Contact getContactById(String contactID) {
         return contactMap.get(contactID);
     }
 
     /**
-     *
-     *
+     * Displays values of current Contact
      */
-    public void displayValues() {
+    void displayValues() {
         contactService.getContactById(contactService.getCurrentContactID()).displayValues();
     }
 
     /**
-     *
-     * @return
+     * Retrieves Address of current Contact
+     * @return String
      */
-    public String getAddress() {
-        return contactService.getContactById(contactService.getCurrentContactID()).getAddress();
+    String getAddress() {
+            return contactService.getContactById(contactService.getCurrentContactID()).getAddress();
     }
 
     /**
-     *
+     * Retrieves Phone Number of current Contact
+     * @return String
      */
-    public void getPhoneNumber() {
-        contactService.getContactById(contactService.getCurrentContactID());
+    String getPhoneNumber() {
+        return contactService.getContactById(contactService.getCurrentContactID()).getPhoneNumber();
+
     }
 
     /**
-     *
+     * Retrieves First Name of current Contact
+     * @return String
      */
-    public void getFirstName() {
-        contactService.getContactById(contactService.getCurrentContactID());
+    String getFirstName() {
+        return contactService.getContactById(contactService.getCurrentContactID()).getFirstName();
     }
 
     /**
-     *
-     * @return
+     * Retrieves Last Name of current Contact
+     * @return String
      */
-    public String getLastName() {
+    String getLastName() {
         return contactService.getContactById(contactService.getCurrentContactID()).getLastName();
     }
 
     /**
-     *
+     * Retrieves ID of current Contact
      * @return
      */
-    public String getContactID() {
+    String getContactID() {
         return contactService.getContactById(contactService.getCurrentContactID()).getContactID();
     }
-
     /**
-     *
+     * Iterates through the hashmap and prints all contacts. Could replace contactService.getAllContacts().entrySet() with contactMap.entrySet() but not doing so for now in case there is further use for getAllContacts, later on.
      */
-    public void printAllContacts() {
+    void printAllContacts() {
         for (HashMap.Entry<String, Contact> entry : contactService.getAllContacts().entrySet()) {
             String contactId = entry.getKey();
             Contact retrievedContact = entry.getValue();
@@ -180,17 +174,26 @@ public class ContactService {
     }
 
     /**
-     * @param contactID
-     * @param newFirstName
-     * @param newLastName
-     * @param newPhoneNumber
-     * @param newAddress
+     * Function to retrieve the contact map for printing all contacts. Made Private since nothing external accesses it.
+     * @return HashMap
      */
-    public void updateContact(String contactID,
+    private HashMap<String, Contact> getAllContacts() {
+        return contactMap;
+    }
+
+    /**
+     * Updates Contact or throws error, values passed as null will be ignored in the constructor only non-null values will be updated.
+     * @param contactID ID of contact to update
+     * @param newFirstName New contact First Name
+     * @param newLastName New contact Last Name
+     * @param newPhoneNumber New contact Phone Number
+     * @param newAddress New contact Address
+     */
+    void updateContact(String contactID,
                               String newFirstName,
                               String newLastName,
                               String newPhoneNumber,
-                              String newAddress) {
+                              String newAddress) throws NullPointerException {
         Contact existingContact = contactMap.get(contactID);
         if (existingContact != null) {
             // Create a new contact with updated values
@@ -203,27 +206,27 @@ public class ContactService {
             contactMap.put(contactID, updatedContact);
             System.out.println("Contact with ID "
                     + contactID
-                    + " updated successfully.");
+                    + " updated successfully!");
         } else {
-            System.out.println("Error: Contact with ID "
-                    + contactID
-                    + " not found.");
+            throw new NullPointerException("Contact with ID: " + contactID + " not found.");
         }
     }
 
     /**
-     * @param contactID
+     * Deletes a Contact by ID or throws an exception if the ID does not exist in the HashMap
+     * @param contactID Contact ID to delete
+     * @throws NullPointerException When ID is not in the map.
      */
-    public void deleteContact(String contactID) throws NullPointerException {
-        Contact removedContact = contactMap.remove(contactID);
-        if (removedContact != null) {
-                System.out.println("Contact with ID "
-                        + contactID
-                        + " deleted successfulzly.");
+    void deleteContact(String contactID) throws NullPointerException {
+        if (contactMap.containsKey(contactID)) {
+            contactMap.remove(contactID);
+            System.out.println("Contact with ID: "
+                    + contactID
+                    + " deleted successfully!");
         } else {
-            throw new NullPointerException("deleteContact: ID does not exist");
-
+            throw new NullPointerException("Contact ID: "
+                    + contactID
+                    + " does not exist");
         }
     }
 }
-

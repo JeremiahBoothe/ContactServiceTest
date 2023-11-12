@@ -73,11 +73,6 @@ public class Contact {
         lengthCheckTen(this.lastName, "Last Name");
         lengthCheckTen(this.phoneNumber, "Phone Number");
         lengthCheckThirty(this.address, "Address");
-
-        //this.firstName = (firstName != null) ? firstName : existingContact.getFirstName();
-        //this.lastName = (lastName != null) ? lastName : existingContact.getLastName();
-        //this.phoneNumber = (phoneNumber != null) ? phoneNumber : existingContact.getPhoneNumber();
-        //this.address = (address != null) ? address : existingContact.getAddress();
     }
 
     /**
@@ -105,8 +100,8 @@ public class Contact {
             }
     }
      /**
-      * Generic type length check to not exceed 10 and pass IllegalArgumentExceptions back up the chain if the value is greater than 10.
-      * @param genericValue The generic typed value to check for length greater than 10.
+      * Generic type length check to not exceed 30 and pass IllegalArgumentExceptions back up the chain if the value is greater than 30.
+      * @param genericValue The generic typed value to check for length greater than 30.
       * @param errorMessage The error message for tracing back to the origin.
       * @param <T> Generic Type.
       */
@@ -121,7 +116,7 @@ public class Contact {
      * Retrieves the Contact ID
      * @return this.contactID
      */
-    public String getContactID(){
+    String getContactID(){
         return this.contactID;
     }
 
@@ -129,7 +124,7 @@ public class Contact {
      * Retrieves the Contact Last name
      * @return lastName
      */
-    public String getLastName(){
+    String getLastName(){
         return this.lastName;
     }
 
@@ -137,7 +132,7 @@ public class Contact {
      * Retrieves the Contact First Name
      * @return firstName
      */
-    public String getFirstName(){
+    String getFirstName(){
         return firstName;
     }
 
@@ -145,7 +140,7 @@ public class Contact {
      * Retrieves the Contact Phone Number
      * @return phoneNumber
      */
-    public String getPhoneNumber() {
+    String getPhoneNumber() {
         return phoneNumber;
     }
 
@@ -153,14 +148,14 @@ public class Contact {
      * Retrieves the Contact Address
      * @return address
      */
-    public String getAddress() {
+    String getAddress() {
         return address;
     }
 
     /**
      * Prints Contact Values
      */
-    public void displayValues() {
+    void displayValues() {
         System.out.println("ID: " + getContactID());
         System.out.println("First Name: " + getFirstName());
         System.out.println("Last Name: " + getLastName());
