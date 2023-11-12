@@ -1,7 +1,7 @@
 package org.jeremiahboothe;
 
 public class Contact {
-    private final int contactID;
+    private final String contactID;
     private final String firstName;
     private final String lastName;
     private final String phoneNumber;
@@ -17,21 +17,22 @@ public class Contact {
      * @throws NullPointerException throws NullPointerExceptions up the chain to be captured at test level
      * @throws IllegalArgumentException Passes IllegalArgumentException up the chain to be captured at test level
      */
-    Contact(int contactID,
+    Contact(String contactID,
             String firstName,
             String lastName,
             String phoneNumber,
             String address)
             throws NullPointerException,
             IllegalArgumentException {
-        nullCheck(firstName, "First name cannot be null");
-        nullCheck(lastName, "Last name cannot be null");
-        nullCheck(phoneNumber, "First name cannot be null");
-        nullCheck(address, "Last name cannot be null");
-        lengthCheckTen(firstName, "First name too Long");
-        lengthCheckTen(lastName, "Last name too Long");
-        lengthCheckTen(phoneNumber, "Phone Number too Long");
-        lengthCheckThirty(address, "Address too Long");
+        nullCheck(firstName, "First Name");
+        nullCheck(lastName, "Last Name");
+        nullCheck(phoneNumber, "Phone Number");
+        nullCheck(address, "Address");
+        lengthCheckTen(contactID, "Contact ID");
+        lengthCheckTen(firstName, "First Name");
+        lengthCheckTen(lastName, "Last Name");
+        lengthCheckTen(phoneNumber, "Phone Number");
+        lengthCheckThirty(address, "Address");
         this.contactID = contactID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -63,14 +64,15 @@ public class Contact {
         this.lastName = (lastName != null) ? lastName : existingContact.getLastName();
         this.phoneNumber = (phoneNumber != null) ? phoneNumber : existingContact.getPhoneNumber();
         this.address = (address != null) ? address : existingContact.getAddress();
-        nullCheck(this.firstName, "");
-        nullCheck(this.lastName, "");
-        nullCheck(this.phoneNumber, "");
-        nullCheck(this.address, "");
-        lengthCheckTen(this.firstName, "");
-        lengthCheckTen(this.lastName, "");
-        lengthCheckTen(this.phoneNumber, "");
-        lengthCheckThirty(this.address, "");
+        nullCheck(this.firstName, "First Name");
+        nullCheck(this.lastName, "Last Name");
+        nullCheck(this.phoneNumber, "Phone Number");
+        nullCheck(this.address, "Address");
+        lengthCheckTen(this.contactID, "Contact ID");
+        lengthCheckTen(this.firstName, "First Name");
+        lengthCheckTen(this.lastName, "Last Name");
+        lengthCheckTen(this.phoneNumber, "Phone Number");
+        lengthCheckThirty(this.address, "Address");
 
         //this.firstName = (firstName != null) ? firstName : existingContact.getFirstName();
         //this.lastName = (lastName != null) ? lastName : existingContact.getLastName();
@@ -79,14 +81,14 @@ public class Contact {
     }
 
     /**
-     * Generic type nullCheck to universally check int and string values and pass NullPointerExceptions back up the chain if one is thrown.
+     * Generic type nullCheck to universally check string values and pass NullPointerExceptions back up the chain if one is thrown.
      * @param genericValue The generic typed value to check for null.
      * @param errorMessage The error message for tracing back to the origin.
      * @param <T> Generic Type.
      */
-    static <T> void nullCheck(T genericValue, String errorMessage) {
+     private <T> void nullCheck(T genericValue, String errorMessage) {
         if (genericValue == null) {
-            throw new NullPointerException(errorMessage);
+            throw new NullPointerException(errorMessage + " cannot be null!");
         }
     }
 
@@ -96,10 +98,10 @@ public class Contact {
      * @param errorMessage The error message for tracing back to the origin.
      * @param <T> Generic Type.
      */
-    static <T> void lengthCheckTen(T genericValue, String errorMessage) {
+    private <T> void lengthCheckTen(T genericValue, String errorMessage) {
         int length = String.valueOf(genericValue).length();
             if (length > 10) {
-                throw new IllegalArgumentException(errorMessage);
+                throw new IllegalArgumentException(errorMessage + " cannot be longer than 10!");
             }
     }
      /**
@@ -108,10 +110,10 @@ public class Contact {
       * @param errorMessage The error message for tracing back to the origin.
       * @param <T> Generic Type.
       */
-    static <T> void lengthCheckThirty(T genericValue, String errorMessage) {
+    private <T> void lengthCheckThirty(T genericValue, String errorMessage) {
         int length = String.valueOf(genericValue).length();
         if (length > 30) {
-            throw new IllegalArgumentException(errorMessage);
+            throw new IllegalArgumentException(errorMessage + " cannot be longer than 30!");
         }
     }
 
@@ -119,7 +121,7 @@ public class Contact {
      * Retrieves the Contact ID
      * @return this.contactID
      */
-    public int getContactID(){
+    public String getContactID(){
         return this.contactID;
     }
 

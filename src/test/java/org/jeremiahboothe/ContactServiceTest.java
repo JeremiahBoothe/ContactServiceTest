@@ -40,45 +40,60 @@ class ContactServiceTest {
 
             System.out.println("\n");
 
-            contactService.displayValues();
+            //contactService.displayValues();
             //Contact contact = contactService.getContactById(contactService.getCurrentContactID());
-            assertNotNull(contactService.getContactById(contactService.getCurrentContactID()));
+            assertNotNull(contactService.getContactById(contactService.getCurrentContactID()), "The added Contact Should not be Null");
             //assertEquals(contact, contactService.getContactById(contactService.getCurrentContactID()));
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException || e instanceof NullPointerException,
                     "Unexpected exception type: " + e.getClass().getSimpleName());
             System.out.println(e.getMessage());
         }
+        contactService.printAllContacts();
     }
 
     @Test
+    void testCustomID() {
+        assertDoesNotThrow(() -> {
+            contactService.addContact("1000000000",
+                    "Billy",
+                    "Kurilko",
+                    "4325556789",
+                    "7523 Waterstreet");
+            assertNotNull(contactService.getContactById(contactService.getCurrentContactID()), "The added Contact Should not be Null");
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            contactService.addContact("21474836471", "Donald", "Hartley", "4325559894", "234 West Street");
+            System.out.println("21464836471 is 11 digits and too long");
+        });
+
+    }
+    @Test
     void testUpdateContact() {
         assertDoesNotThrow(() -> {
-            Contact contact = contactService.addContact(1000, "But", "why", "too", "high a number");
-            assertNotNull(contact, "The added Contact Should not be Null");
+
+            contactService.addContact("1000", "But", "why", "too", "high a number");
+            assertNotNull(contactService.getContactById(contactService.getCurrentContactID()), "The added Contact Should not be Null");
 
         });
-
-        assertDoesNotThrow( () -> {
-            //Todo: Assert it did update
-            contactService.updateContact(1000,
-                    "murp",
-                    "Durp",
-                    "butter",
-                    "cookies");
-        });
-
         // Use assertThrows to check for exceptions during the contact addition
         assertThrows(IllegalArgumentException.class, () -> {
-            contactService.addContact(1000,
+            contactService.addContact("1000",
                     "meh",
                     "beh",
                     "too",
                     "high");
         });
-
-
-
+        //
+        assertDoesNotThrow( () -> {
+            //Todo: Assert it did update
+            contactService.updateContact("1000",
+                    "murp",
+                    "Durp",
+                    "butter",
+                    "cookies");
+        });
     }
 
     @Test
@@ -96,17 +111,17 @@ class ContactServiceTest {
 
         System.out.println("\n");
 
-        contactService.deleteContact(1);
+        contactService.deleteContact("1");
 
         contactService.addContact("Lennry",
                 "Balthazor",
                 "4325559275",
                 "333 Happy Place");
 
-        contactService.deleteContact(3);
+        contactService.deleteContact("3");
 
         try {
-            contactService.deleteContact(99);
+            contactService.deleteContact("99");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException || e instanceof NullPointerException,
                     "Unexpected exception type: " + e.getClass().getSimpleName());

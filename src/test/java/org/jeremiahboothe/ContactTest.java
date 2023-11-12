@@ -10,12 +10,12 @@ class ContactTest {
     @BeforeEach
     void setUp() {
         // Set up a new Contact object before each test
-        contact = new Contact(1, "John", "Doe", "1234567890", "123 Main St");
+        contact = new Contact("1", "John", "Doe", "1234567890", "123 Main St");
     }
 
     @Test
     void testGetContactID() {
-        assertEquals(1, contact.getContactID());
+        assertEquals("1", contact.getContactID());
     }
 
     @Test
@@ -48,13 +48,13 @@ class ContactTest {
     @Test
     void testConstructorNullCheck() {
         // Test that the constructor throws NullPointerException for null values
-        assertThrows(NullPointerException.class, () -> new Contact(1, null, "Doe", "1234567890", "123 Main St"));
+        assertThrows(NullPointerException.class, () -> new Contact("1", null, "Doe", "1234567890", "123 Main St"));
     }
 
     @Test
     void testConstructorLengthCheck() {
         // Test that the constructor throws IllegalArgumentException for values exceeding length limits
-        assertThrows(IllegalArgumentException.class, () -> new Contact(1, "Johnnnnnnnnnn", "Doe", "1234567890", "123 Main St"));
+        assertThrows(IllegalArgumentException.class, () -> new Contact("1", "Johnnnnnnnnnn", "Doe", "1234567890", "123 Main St"));
     }
 
     @Test

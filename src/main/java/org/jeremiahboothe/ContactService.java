@@ -8,25 +8,27 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created as a Singleton, ContactService, handles the operations and creation of the map and hashmap. Upon instantiation the constructor creates the Hashmap.
  */
 public class ContactService {
-    private int currentContactID;
-    private static final HashMap<Integer, Contact> contactMap = new HashMap<>();
-    private static final ContactService contactService = new ContactService();
+    private String currentContactID;
+    private static final HashMap<String, Contact> contactMap = new HashMap<>();
+
+    private static final ContactService contactService = new ContactService(contactMap);
 
     /**
      * Constructs ContactService with HashMap to store the UniqueID's as the key and Contact objects as values.
      */
-    private ContactService() {
+    private ContactService(HashMap<String, Contact> contactMap) {
+
     }
 
     /**
      * @return newID
      */
-    public static int generateUniqueID() {
+    public static String generateUniqueID() {
         AtomicInteger contactIDGenerator = new AtomicInteger();
-        int newId;
+        String newId;
         do {
             // Generate a new unique ID passing over any that already exist in the contact map
-            newId = contactIDGenerator.incrementAndGet();
+            newId = String.valueOf(contactIDGenerator.incrementAndGet());
         } while (contactMap.containsKey(newId)); // Check if the ID already exists in the map
         return newId;
     }
@@ -35,7 +37,7 @@ public class ContactService {
      *
      * @param newID
      */
-    private void setCurrentContactID(int newID) {
+    private void setCurrentContactID(String newID) {
         this.currentContactID = newID;
     }
 
@@ -43,7 +45,7 @@ public class ContactService {
      *
      * @return currentContactID
      */
-    public int getCurrentContactID() {
+    public String getCurrentContactID() {
         return currentContactID;
     }
 
@@ -58,7 +60,7 @@ public class ContactService {
                        String lastName,
                        String phoneNumber,
                        String address) {
-        int newID = generateUniqueID();
+        String newID = generateUniqueID();
         Contact contact = new Contact(newID,
                 firstName,
                 lastName,
@@ -77,7 +79,7 @@ public class ContactService {
      * @param address
      * @return new Contact
      */
-    Contact addContact(int userID,
+    Contact addContact(String userID,
                        String firstName,
                        String lastName,
                        String phoneNumber,
@@ -100,7 +102,7 @@ public class ContactService {
     /**
      * @return contactMap
      */
-    public Map<Integer, Contact> getAllContacts() {
+    public Map<String, Contact> getAllContacts() {
         return contactMap;
     }
 
@@ -115,7 +117,7 @@ public class ContactService {
      * @param contactID
      * @return contactMap
      */
-    public Contact getContactById(int contactID) {
+    public Contact getContactById(String contactID) {
         return contactMap.get(contactID);
     }
 
@@ -161,7 +163,7 @@ public class ContactService {
      *
      * @return
      */
-    public int getContactID() {
+    public String getContactID() {
         return contactService.getContactById(contactService.getCurrentContactID()).getContactID();
     }
 
@@ -169,8 +171,8 @@ public class ContactService {
      *
      */
     public void printAllContacts() {
-        for (HashMap.Entry<Integer, Contact> entry : contactService.getAllContacts().entrySet()) {
-            int contactId = entry.getKey();
+        for (HashMap.Entry<String, Contact> entry : contactService.getAllContacts().entrySet()) {
+            String contactId = entry.getKey();
             Contact retrievedContact = entry.getValue();
             System.out.println("\nRetrieved Contact from Index " + contactId + ":");
             retrievedContact.displayValues();
@@ -184,7 +186,7 @@ public class ContactService {
      * @param newPhoneNumber
      * @param newAddress
      */
-    public void updateContact(int contactID,
+    public void updateContact(String contactID,
                               String newFirstName,
                               String newLastName,
                               String newPhoneNumber,
@@ -212,7 +214,7 @@ public class ContactService {
     /**
      * @param contactID
      */
-    public void deleteContact(int contactID) throws NullPointerException {
+    public void deleteContact(String contactID) throws NullPointerException {
         Contact removedContact = contactMap.remove(contactID);
         if (removedContact != null) {
                 System.out.println("Contact with ID "
