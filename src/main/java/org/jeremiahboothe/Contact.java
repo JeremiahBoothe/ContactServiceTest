@@ -7,6 +7,10 @@ public class Contact {
     private final String phoneNumber;
     private final String address;
 
+    private final int lengthShort = 10;
+    private final int lengthLong = 30;
+
+
     /**
      * Constructor for new Contact Creation. Constructor is designed to prevent object instantiation upon failed null check or failed length check. Passes errors up the chain to be captured at test level.
      * @param contactID Generated or UserInputID
@@ -95,7 +99,7 @@ public class Contact {
      */
     private <T> void lengthCheckTen(T genericValue, String errorMessage) {
         int length = String.valueOf(genericValue).length();
-            if (length > 10) {
+            if (length > lengthShort) {
                 throw new IllegalArgumentException(errorMessage + " cannot be longer than 10!");
             }
     }
@@ -107,7 +111,7 @@ public class Contact {
       */
     private <T> void lengthCheckThirty(T genericValue, String errorMessage) {
         int length = String.valueOf(genericValue).length();
-        if (length > 30) {
+        if (length > lengthLong) {
             throw new IllegalArgumentException(errorMessage + " cannot be longer than 30!");
         }
     }

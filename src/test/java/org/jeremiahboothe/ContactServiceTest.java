@@ -5,9 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * TODO: test to assure MapKey matches object id always?
- */
 class ContactServiceTest {
     private static ContactService contactService;
 
@@ -21,10 +18,10 @@ class ContactServiceTest {
 
     /**
      * Parameterized test to run null check and length check, ensuring values that are too long or null are rejected.
-     * @param firstName
-     * @param lastName
-     * @param phoneNumber
-     * @param address
+     * @param firstName CSV First Names
+     * @param lastName CSV Last Names
+     * @param phoneNumber CSV Phone Numbers
+     * @param address CSV Addresses
      */
     @CsvSource({
             "Isabella,Anderson,4325555678,123 Oak St",
@@ -65,7 +62,7 @@ class ContactServiceTest {
     }
 
     /**
-     * todo
+     * Tests User Input ID's, and checks to ensure overwrites to not occur after user Input ID is created.
      */
     @Test
     void testCustomID() {
@@ -78,7 +75,16 @@ class ContactServiceTest {
                     "7523 Waterstreet");
         });
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        assertDoesNotThrow(() -> {
+            contactService
+                    .addContact("JJJ*#$@$%J",
+                            "Benny",
+                            "Barton",
+                            "4325356389",
+                            "7432 Waterstreet");
+        });
+
+        IllegalArgumentException exceptionDuplicateID = assertThrows(IllegalArgumentException.class, () -> {
             contactService
                     .addContact("1000000000",
                             "Billy",
@@ -87,7 +93,18 @@ class ContactServiceTest {
                             "7523 Waterstreet");
 
         });
-        assertEquals("Contact ID: 1000000000 already exists!", exception.getMessage());
+        assertEquals("Contact ID: 1000000000 already exists!", exceptionDuplicateID.getMessage());
+
+        IllegalArgumentException exceptionDuplicateID2 = assertThrows(IllegalArgumentException.class, () -> {
+            contactService
+                    .addContact("JJJ*#$@$%J",
+                            "Billy",
+                            "Kurilko",
+                            "4325556789",
+                            "7523 Waterstreet");
+
+        });
+        assertEquals("Contact ID: JJJ*#$@$%J already exists!", exceptionDuplicateID2.getMessage());
         contactService.displayValues();
 
     }
@@ -127,7 +144,7 @@ class ContactServiceTest {
     }
 
     /**
-     * todo
+     * Tests updating contact that does not exist, to make sure it's not added instead.
      */
     @Test
     void updateContactNonExistent() {
@@ -145,7 +162,7 @@ class ContactServiceTest {
     }
 
     /**
-     * todo
+     * Tests and verifies deleting contact and not being able to again delete a contact after it has been deleted.
      */
     @Test
     void testDeleteContact() {
@@ -155,12 +172,12 @@ class ContactServiceTest {
                     "asdfgh",
                     "340531",
                     "234345");
-            contactService.deleteContact("1"); // Assuming "2" does not exist
+            contactService.deleteContact("1");
             assertNull(contactService.getContactById("1"));
         });
 
         try {
-            contactService.deleteContact("1"); // Assuming "2" does not exist
+            contactService.deleteContact("1");
 
         } catch (NullPointerException e) {
             assertTrue(true,
@@ -170,16 +187,17 @@ class ContactServiceTest {
     }
 
     /**
-     * todo
+     * Tests print allContacts to make sure it's not throwing an error, the contacts currently in the map are printed to console.
      */
     @Test
     void testPrintAllContacts() {
-        contactService.printAllContacts();
+        assertDoesNotThrow(() -> {
+            contactService.printAllContacts();
+        });
     }
 
-
     /**
-     * todo:
+     * Tests retrieval of ID for current contact
      */
     @Test
     void getContactID() {
@@ -187,11 +205,11 @@ class ContactServiceTest {
                 "Balthazor",
                 "4325559275",
                 "333 Happy Place");
-        System.out.println(contactService.getContactID());
+        assertEquals(contactService.getContactID(), "599");
     }
 
     /**
-     * todo:
+     * Tests retrieval of Last Name of current contact.
      */
     @Test
     void getLastName() {
@@ -203,7 +221,7 @@ class ContactServiceTest {
     }
 
     /**
-     * Todo:
+     * Tests retrieval of First Name of current Contact
      */
     @Test
     void getFirstName() {
@@ -216,7 +234,7 @@ class ContactServiceTest {
     }
 
     /**
-     * done
+     * Tests retrieval of phone number from current contact
      */
     @Test
     void testGetPhoneNumber() {
@@ -231,7 +249,7 @@ class ContactServiceTest {
     }
 
     /**
-     * done
+     * Tests retrieval of address from current contact.
      */
     @Test
     void testGetAddress() {
@@ -240,7 +258,8 @@ class ContactServiceTest {
                     "Balthazor",
                     "4325559275",
                     "333 Happy Place");
-            assertEquals(contactService.getAddress(), "333 Happy Place");
+            assertEquals(contactService.getContactById("99").getAddress(), "333 Happy Place");
+            System.out.println(contactService.getAddress());
         });
         assertThrows(NullPointerException.class, () -> {
             assertNull(contactService.getContactById("777").getAddress());

@@ -42,7 +42,7 @@ public class ContactService {
 
     /**
      * Stores active contactID for reference to add & update Contacts
-     * @param newID
+     * @param newID new ContactID, whether user input or generated
      */
     void setCurrentContactID(String newID) {
         this.currentContactID = newID;
@@ -57,16 +57,16 @@ public class ContactService {
     }
     /**
      * Generates a uniqueID if user did not input an ID, creates new Contact with ID, adds the Contact to the Map, and sets currentContactID to newID as reference.
-     * @param firstName User input First Name of Contact
-     * @param lastName User input Last Name of Contact
+     *
+     * @param firstName   User input First Name of Contact
+     * @param lastName    User input Last Name of Contact
      * @param phoneNumber User input Phone Number of Contact
-     * @param address User input Address of Contact
-     * @return new Contact
+     * @param address     User input Address of Contact
      */
-    Contact addContact(String firstName,
-                       String lastName,
-                       String phoneNumber,
-                       String address) {
+     void addContact(String firstName,
+                     String lastName,
+                     String phoneNumber,
+                     String address) {
         String newID = generateUniqueID();
         Contact contact = new Contact(newID,
                 firstName,
@@ -75,23 +75,22 @@ public class ContactService {
                 address);
         contactMap.put(newID, contact);
         setCurrentContactID(newID);
-        return contact;
-    }
+     }
 
     /**
      * Adds Contact when user inputs preferred ID
-     * @param userID User Input ID of Contact
-     * @param firstName User Input First Name of Contact
-     * @param lastName User Input Last Name of Contact
+     *
+     * @param userID      User Input ID of Contact
+     * @param firstName   User Input First Name of Contact
+     * @param lastName    User Input Last Name of Contact
      * @param phoneNumber User Input Phone Number of Contact
-     * @param address User Input Address of Contact
-     * @return new Contact
+     * @param address     User Input Address of Contact
      */
-    Contact addContact(String userID,
-                       String firstName,
-                       String lastName,
-                       String phoneNumber,
-                       String address) {
+    void addContact(String userID,
+                    String firstName,
+                    String lastName,
+                    String phoneNumber,
+                    String address) {
         if (contactMap.containsKey(userID)) {
             throw new IllegalArgumentException("Contact ID: " + userID + " already exists!");
         }
@@ -102,7 +101,6 @@ public class ContactService {
                 address);
         contactMap.put(userID, contact);
         setCurrentContactID(userID);
-        return contact;
     }
 
     /**
@@ -156,7 +154,7 @@ public class ContactService {
 
     /**
      * Retrieves ID of current Contact
-     * @return
+     * @return contactID of current Contact
      */
     String getContactID() {
         return contactService.getContactById(contactService.getCurrentContactID()).getContactID();
