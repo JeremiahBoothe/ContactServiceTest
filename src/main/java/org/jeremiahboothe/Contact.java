@@ -2,14 +2,38 @@ package org.jeremiahboothe;
 
 public class Contact {
     private final String contactID;
-    private final String firstName;
-    private final String lastName;
-    private final String phoneNumber;
-    private final String address;
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
+    private String address;
+    private final int lengthCheckShort = 10;
+    private final int lengthCheckLong = 30;
 
-    private final int lengthShort = 10;
-    private final int lengthLong = 30;
+    /**
+     * Generic type nullCheck to universally check string values and pass NullPointerExceptions back up the chain if one is thrown.
+     * @param genericValue The generic typed value to check for null.
+     * @param errorMessage The error message for tracing back to the origin.
+     * @param <T> Generic Type.
+     */
+    private <T> void nullCheck(T genericValue, String errorMessage) {
+        if (genericValue == null) {
+            throw new NullPointerException(errorMessage + " cannot be null!");
+        }
+    }
 
+    /**
+     * Generic type length check, made it more universal, now it receives an integer value of allowedLength, to be more flexible and redefined in the final lengths at the top or by each setter.
+     * @param genericValue The generic typed value to check for length greater than 10 or 30.
+     * @param errorMessage The error message for tracing back to the origin.
+     * @param allowedLength The allowed maximum not to be exceeded by each setter.
+     * @param <T> Generic Type.
+     */
+    private <T> void lengthCheck(T genericValue, String errorMessage, int allowedLength) {
+        int length = String.valueOf(genericValue).length();
+        if (length > allowedLength) {
+            throw new IllegalArgumentException(errorMessage + " cannot be longer than " + allowedLength + "!");
+        }
+    }
 
     /**
      * Constructor for new Contact Creation. Constructor is designed to prevent object instantiation upon failed null check or failed length check. Passes errors up the chain to be captured at test level.
@@ -28,97 +52,70 @@ public class Contact {
             String address)
             throws NullPointerException,
             IllegalArgumentException {
-        nullCheck(firstName, "First Name");
-        nullCheck(lastName, "Last Name");
-        nullCheck(phoneNumber, "Phone Number");
-        nullCheck(address, "Address");
-        lengthCheckTen(contactID, "Contact ID");
-        lengthCheckTen(firstName, "First Name");
-        lengthCheckTen(lastName, "Last Name");
-        lengthCheckTen(phoneNumber, "Phone Number");
-        lengthCheckThirty(address, "Address");
+        nullCheck(contactID, "Contact ID");
+        lengthCheck(contactID, "Contact ID", lengthCheckShort);
+        setFirstName(firstName);
+        setLastName(lastName);
+        setPhoneNumber(phoneNumber);
+        setAddress(address);
         this.contactID = contactID;
+    }
+
+    /**
+     * Sets the First Name for the contact.
+     * @param firstName First Name to apply to contact.
+     */
+    void setFirstName(String firstName) {
+        String errorIdentifier = "First Name";
+
+        nullCheck(firstName, errorIdentifier);
+        lengthCheck(firstName, errorIdentifier, lengthCheckShort);
+
         this.firstName = firstName;
+    }
+
+    /**
+     * Sets the Last Name for the contact.
+     * @param lastName Last Name to apply to the contact.
+     */
+    void setLastName(String lastName) {
+        String errorIdentifier = "Last Name";
+
+        nullCheck(lastName, errorIdentifier);
+        lengthCheck(lastName, errorIdentifier, lengthCheckShort);
+
         this.lastName = lastName;
+    }
+
+    /**
+     * Sets the Phone Number for the contact.
+     * @param phoneNumber Phone Number to apply to the contact.
+     */
+    void setPhoneNumber(String phoneNumber) {
+        String errorIdentifier = "Phone Number";
+
+        nullCheck(phoneNumber, errorIdentifier);
+        lengthCheck(phoneNumber, errorIdentifier, lengthCheckShort);
+
         this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * Sets the Address for the contact.
+     * @param address Address to apply to the contact.
+     */
+    void setAddress(String address) {
+        String errorIdentifier = "Address";
+
+        nullCheck(address, errorIdentifier);
+        lengthCheck(address, errorIdentifier, lengthCheckLong);
+
         this.address = address;
     }
 
     /**
-     * Updates existingContact retaining ID value and any other values that were null at update. You can update 1, 2, 3, or 4 values.
-     * @param existingContact contact passed in for reconstruction.
-     * @param firstName Contact First Name
-     * @param lastName Contact Last Name
-     * @param phoneNumber Contact Phone Number
-     * @param address Contact Address
-     * @throws NullPointerException throws NullPointerExceptions up the chain to be captured at test level
-     * @throws IllegalArgumentException Passes IllegalArgumentException up the chain to be captured at test level
-     */
-    Contact(Contact existingContact,
-            String firstName,
-            String lastName,
-            String phoneNumber,
-            String address)
-            throws NullPointerException,
-            IllegalArgumentException {
-            // Use the existing contact's ID
-            contactID = existingContact.getContactID();
-         // Update non-null values
-        this.firstName = (firstName != null) ? firstName : existingContact.getFirstName();
-        this.lastName = (lastName != null) ? lastName : existingContact.getLastName();
-        this.phoneNumber = (phoneNumber != null) ? phoneNumber : existingContact.getPhoneNumber();
-        this.address = (address != null) ? address : existingContact.getAddress();
-        nullCheck(this.firstName, "First Name");
-        nullCheck(this.lastName, "Last Name");
-        nullCheck(this.phoneNumber, "Phone Number");
-        nullCheck(this.address, "Address");
-        lengthCheckTen(this.contactID, "Contact ID");
-        lengthCheckTen(this.firstName, "First Name");
-        lengthCheckTen(this.lastName, "Last Name");
-        lengthCheckTen(this.phoneNumber, "Phone Number");
-        lengthCheckThirty(this.address, "Address");
-    }
-
-    /**
-     * Generic type nullCheck to universally check string values and pass NullPointerExceptions back up the chain if one is thrown.
-     * @param genericValue The generic typed value to check for null.
-     * @param errorMessage The error message for tracing back to the origin.
-     * @param <T> Generic Type.
-     */
-     private <T> void nullCheck(T genericValue, String errorMessage) {
-        if (genericValue == null) {
-            throw new NullPointerException(errorMessage + " cannot be null!");
-        }
-    }
-
-    /**
-     * Generic type length check to not exceed 10 and pass IllegalArgumentExceptions back up the chain if the value is greater than 10.
-     * @param genericValue The generic typed value to check for length greater than 10.
-     * @param errorMessage The error message for tracing back to the origin.
-     * @param <T> Generic Type.
-     */
-    private <T> void lengthCheckTen(T genericValue, String errorMessage) {
-        int length = String.valueOf(genericValue).length();
-            if (length > lengthShort) {
-                throw new IllegalArgumentException(errorMessage + " cannot be longer than 10!");
-            }
-    }
-     /**
-      * Generic type length check to not exceed 30 and pass IllegalArgumentExceptions back up the chain if the value is greater than 30.
-      * @param genericValue The generic typed value to check for length greater than 30.
-      * @param errorMessage The error message for tracing back to the origin.
-      * @param <T> Generic Type.
-      */
-    private <T> void lengthCheckThirty(T genericValue, String errorMessage) {
-        int length = String.valueOf(genericValue).length();
-        if (length > lengthLong) {
-            throw new IllegalArgumentException(errorMessage + " cannot be longer than 30!");
-        }
-    }
-
-    /**
      * Retrieves the Contact ID
-     * @return this.contactID
+     * @return contactID
      */
     String getContactID(){
         return this.contactID;

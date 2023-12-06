@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ContactServiceTest {
     private static ContactService contactService;
 
@@ -17,161 +18,147 @@ class ContactServiceTest {
     }
 
     /**
+     * BeforeEach test formatting, to make it a little bit more enjoyable to read!
+     * @param testInfo - to pull the display name off each test to display.
+     */
+    @BeforeEach
+    void testFormattingPrintBefore(TestInfo testInfo) {
+        String displayDate = testInfo.getDisplayName();
+        int totalLength = 85; // Adjust the total length as needed
+        int paddingLength = (totalLength - displayDate.length() - 2) / 2;
+        int extraPadding = (totalLength - displayDate.length() - 2) % 2;
+
+        String padding = "*".repeat(paddingLength);
+        String padding2 = "=".repeat(totalLength);
+        String extraPaddingStr = (extraPadding == 1) ? "*": "";
+
+        System.out.println(padding2);
+        System.out.printf("%s %s %s%s\n\n", padding, displayDate, padding, extraPaddingStr);
+    }
+
+    /**
+     * BeforeEach test formatting, to make it a little bit more enjoyable to read!
+     */
+    @AfterEach
+    void testFormattingPrintAfter() {
+        int totalLength = 85; // Adjust the total length as needed
+        String padding2 = "=".repeat(totalLength);
+        System.out.println(padding2 + "\n\n");
+    }
+
+    /**
      * Parameterized test to run null check and length check, ensuring values that are too long or null are rejected.
      * @param firstName CSV First Names
      * @param lastName CSV Last Names
      * @param phoneNumber CSV Phone Numbers
      * @param address CSV Addresses
      */
+    @Order(1)
     @CsvSource({
-            "Isabella,Anderson,4325555678,123 Oak St",
-            ",Smith,4325551234,456 Pine Ln",
-            "Sophia,,4325559275,789 Elm Blvd",
-            "Mason,Clark, ,890 Cedar Rd",
-            "Amelia,Cooper,4325558765,",
-            "EmmaGenopolis,Evans,4325553456,567 Maple Dr",
-            "Elijah,TurnerBakerson,4325556789,890 Cedar Rd",
-            "Emma,Miller,14325554321,456 Oak Ave",
-            "Olivia,Davis,4325553456,8000 Taumatawhakatangihangakoauauo tamateaturipukakapikimaungahoronuku pokaiwhenuakitanatahu",
-            "Sophia,Clark,4325559275,789 Elm Blvd"})
+            ", Isabella,Anderson,4325555678,123 Oak St",
+            "Rob@gl.com, ,Smith,4325551234,456 Pine Ln",
+            "S@mail.com, Sophia,,4325559275,789 Elm Blvd",
+            "Ms@mil.com, Mason,Clark, ,890 Cedar Rd",
+            "Am@ail.com, Amelia,Cooper,4325558765,",
+            "bla@Mars.com, Sophia,Clark,4325559275,789 Elm Blvd",
+            "Loi@do.com, EmmaGenopolis,Evans,4325553456,567 Maple Dr",
+            "Eli@La.com, Elijah,TurnerBakerson,4325556789,890 Cedar Rd",
+            "efd@Mr.com, Emma,Miller,14325554321,456 Oak Ave",
+            "RAb@gr.com, Olivia,Davis,4325553456,8000 Taumatawhakatangihangakoauauo",
+            "bla@Mars.com, Sophia,Clark,4325559275,789 Elm Blvd",
+            "Loi@do.com, Emma, Evans,4325553456,567 Maple Dr",
+            "Eli@La.com, Elijah,Turner,4325556789,890 Cedar Rd",
+            "efd@Mr.com, Emma,Miller,4325554321,456 Oak Ave",
+            "efd@Mr.com, Emma,Miller,4325554321,456 Oak Ave"})
     @ParameterizedTest
     @DisplayName("Test Exceptions for Null and Length")
-    void testAddContactAndGetContactById(String firstName,
+    void testAddContactAndGetContactById(String contactId,
+                                         String firstName,
                                          String lastName,
                                          String phoneNumber,
                                          String address) {
         try {
-            contactService.addContact(firstName,
+            contactService.addContact(
+                    contactService.createNewContactToAddToMap(contactId,
+                    firstName,
                     lastName,
                     phoneNumber,
-                    address);
+                    address));
 
-            System.out.println("\n");
-
-            contactService.displayValues();
-            System.out.println("\n");
-            //Contact contact = contactService.getContactById(contactService.getCurrentContactID());
-            assertNotNull(contactService.getContactById(contactService.getCurrentContactID()), "The added Contact Should not be Null");
-            //assertEquals(contact, contactService.getContactById(contactService.getCurrentContactID()));
+            assertNotNull(contactService.getContactById(contactId), "The added Contact Should not be Null");
+            contactService.displayValues(contactId);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException || e instanceof NullPointerException,
                     "Unexpected exception type: " + e.getClass().getSimpleName());
             System.out.println(e.getMessage());
         }
-
     }
 
     /**
-     * Tests User Input ID's, and checks to ensure overwrites to not occur after user Input ID is created.
+     * Tests print allContacts to make sure it's not throwing an error, the contacts currently in the map are printed to console.
      */
     @Test
-    void testCustomID() {
+    @Order(2)
+    @DisplayName("Prints Parameterized Test Map Values:")
+    void testPrintAllMapAppointmentsFromParam() {
         assertDoesNotThrow(() -> {
-            contactService
-                    .addContact("1000000000",
-                    "Billy",
-                    "Kurilko",
-                    "4325556789",
-                    "7523 Waterstreet");
-        });
-
-        assertDoesNotThrow(() -> {
-            contactService
-                    .addContact("JJJ*#$@$%J",
-                            "Benny",
-                            "Barton",
-                            "4325356389",
-                            "7432 Waterstreet");
-        });
-
-        IllegalArgumentException exceptionDuplicateID = assertThrows(IllegalArgumentException.class, () -> {
-            contactService
-                    .addContact("1000000000",
-                            "Billy",
-                            "Kurilko",
-                            "4325556789",
-                            "7523 Waterstreet");
-
-        });
-        assertEquals("Contact ID: 1000000000 already exists!", exceptionDuplicateID.getMessage());
-
-        IllegalArgumentException exceptionDuplicateID2 = assertThrows(IllegalArgumentException.class, () -> {
-            contactService
-                    .addContact("JJJ*#$@$%J",
-                            "Billy",
-                            "Kurilko",
-                            "4325556789",
-                            "7523 Waterstreet");
-
-        });
-        assertEquals("Contact ID: JJJ*#$@$%J already exists!", exceptionDuplicateID2.getMessage());
-        contactService.displayValues();
-
-    }
-
-    /**
-     * todo:
-     */
-    @Test
-    void testUpdateContact() {
-        assertDoesNotThrow(() -> {
-            contactService.addContact("1000",
-                    "But",
-                    "why",
-                    "too",
-                    "high a number");
-            assertNotNull(contactService.getContactById(contactService.getCurrentContactID()), "The added Contact Should not be Null");
-
-        });
-
-        // Use assertThrows to check for exceptions during the contact addition
-        assertThrows(IllegalArgumentException.class, () -> {
-            contactService.addContact("1000",
-                    "meh",
-                    "beh",
-                    "too",
-                    "high");
-        });
-
-        //
-        assertDoesNotThrow(() -> {
-            contactService.updateContact("1000",
-                    "murp",
-                    "Durp",
-                    "butter",
-                    "cookies");
+            contactService.printAllContacts();
         });
     }
 
     /**
-     * Tests updating contact that does not exist, to make sure it's not added instead.
+     * Checks retrieval of each value, by ID, from the map.
      */
     @Test
-    void updateContactNonExistent() {
-    try {
-            contactService.updateContact("75",
-                    "murp",
-                    "Durp",
-                    "butter",
-                    "cookies");
-    }catch (NullPointerException e) {
-            assertTrue(true,
-                    "Unexpected exception type: " + e.getClass().getSimpleName());
-            System.out.println(e.getMessage());
-        }
+    @Order(3)
+    @DisplayName("Checks retrieval of each value, by Id, from the map.")
+    void testGetValuesById() {
+        String contactId = "99";
+        String firstName = "Lennry";
+        String lastName = "Balthazor";
+        String phoneNumber = "4325559275";
+        String address = "333 Happy Place";
+
+        assertDoesNotThrow(() -> {
+            contactService.addContact(contactService
+                    .createNewContactToAddToMap(
+                            contactId,
+                            "Lennry",
+                            "Balthazor",
+                            "4325559275",
+                            "333 Happy Place"));
+            assertAll(
+                    () -> assertNotNull(contactService.getContactById(contactId)),
+                    () -> assertEquals(firstName, contactService.getFirstName(contactId)),
+                    () -> assertEquals(lastName, contactService.getLastName(contactId)),
+                    () -> assertEquals(phoneNumber, contactService.getPhoneNumber(contactId)),
+                    () -> assertEquals(address, contactService.getAddress(contactId))
+            );
+            System.out.println(contactService.getFirstName(contactId));
+            System.out.println(contactService.getLastName(contactId));
+            System.out.println(contactService.getPhoneNumber(contactId));
+            System.out.println(contactService.getAddress(contactId));
+
+        });
+        assertThrows(NullPointerException.class, () -> {
+            assertNull(contactService.getContactById("777").getAddress());
+        });
     }
 
     /**
      * Tests and verifies deleting contact and not being able to again delete a contact after it has been deleted.
      */
     @Test
+    @Order(4)
+    @DisplayName("Test Deletion if exists, Fails if null:")
     void testDeleteContact() {
         assertDoesNotThrow(() -> {
-            contactService.addContact("1",
-                    "asdf",
-                    "asdfgh",
-                    "340531",
-                    "234345");
+            contactService.addContact(contactService
+                    .createNewContactToAddToMap("1",
+                            "asdf",
+                            "asdfgh",
+                            "340531",
+                            "234345"));
             contactService.deleteContact("1");
             assertNull(contactService.getContactById("1"));
         });
@@ -187,82 +174,99 @@ class ContactServiceTest {
     }
 
     /**
-     * Tests print allContacts to make sure it's not throwing an error, the contacts currently in the map are printed to console.
+     * Steps through creating a contact and updating the Contact, individually updating each Value.
      */
     @Test
-    void testPrintAllContacts() {
+    @Order(6)
+    @DisplayName("Update Contact by parameter:")
+    void testUpdateContactFromMap() {
+        String contactId = "53354";
+
+        // Found out variables must be final or reference objects for use with assertAll, which I was using for grouping and readability.
+        var reference = new Object() {
+            String firstName = "Bob";
+            String lastName = "Barker";
+            String phoneNumber = "9999999999";
+            String address = "The Price is Right!";
+
+        };
+
+        contactService.addContact(contactService
+                .createNewContactToAddToMap(contactId,
+                        reference.firstName,
+                        reference.lastName,
+                        reference.phoneNumber,
+                        reference.address));
+
+        assertAll(
+                () -> assertNotNull(contactService.getContactById(contactId)),
+                () -> assertEquals(reference.firstName, contactService.getFirstName(contactId)),
+                () -> assertEquals(reference.lastName, contactService.getLastName(contactId)),
+                () -> assertEquals(reference.phoneNumber, contactService.getPhoneNumber(contactId)),
+                () -> assertEquals(reference.address, contactService.getAddress(contactId))
+
+        );
+        contactService.getContactById(contactId).displayValues();
+        System.out.println("\n");
+
+        reference.firstName = "UPDATED";
+        contactService.updateFirstName(contactId, reference.firstName);
+        assertAll(
+                () -> assertNotNull(contactService.getContactById(contactId)),
+                () -> assertEquals(reference.firstName, contactService.getFirstName(contactId)),
+                () -> assertEquals(reference.lastName, contactService.getLastName(contactId)),
+                () -> assertEquals(reference.phoneNumber, contactService.getPhoneNumber(contactId)),
+                () -> assertEquals(reference.address, contactService.getAddress(contactId))
+        );
+        contactService.getContactById(contactId).displayValues();
+        System.out.println("\n");
+
+        reference.lastName = "UPDATED";
+        contactService.updateLastName(contactId, reference.lastName);
+        assertAll(
+                () -> assertNotNull(contactService.getContactById(contactId)),
+                () -> assertEquals(reference.firstName, contactService.getFirstName(contactId)),
+                () -> assertEquals(reference.lastName, contactService.getLastName(contactId)),
+                () -> assertEquals(reference.phoneNumber, contactService.getPhoneNumber(contactId)),
+                () -> assertEquals(reference.address, contactService.getAddress(contactId))
+        );
+        contactService.getContactById(contactId).displayValues();
+        System.out.println("\n");
+
+        reference.phoneNumber = "UPDATED";
+        contactService.updatePhoneNumber(contactId, reference.phoneNumber);
+        assertAll(
+                () -> assertNotNull(contactService.getContactById(contactId)),
+                () -> assertEquals(reference.firstName, contactService.getFirstName(contactId)),
+                () -> assertEquals(reference.lastName, contactService.getLastName(contactId)),
+                () -> assertEquals(reference.phoneNumber, contactService.getPhoneNumber(contactId)),
+                () -> assertEquals(reference.address, contactService.getAddress(contactId))
+        );
+        contactService.getContactById(contactId).displayValues();
+        System.out.println("\n");
+
+        reference.address = "UPDATED";
+        contactService.updateAddress(contactId, reference.address);
+        assertAll(
+                () -> assertNotNull(contactService.getContactById(contactId)),
+                () -> assertEquals(reference.firstName, contactService.getFirstName(contactId)),
+                () -> assertEquals(reference.lastName, contactService.getLastName(contactId)),
+                () -> assertEquals(reference.phoneNumber, contactService.getPhoneNumber(contactId)),
+                () -> assertEquals(reference.address, contactService.getAddress(contactId))
+        );
+        contactService.getContactById(contactId).displayValues();
+        System.out.println("\n");
+    }
+
+    /**
+     * Prints all remaining Map Entries
+     */
+    @Test
+    @Order(7)
+    @DisplayName("Prints the final Test Map Values:")
+    void testPrintAllMapAppointmentsLast() {
         assertDoesNotThrow(() -> {
             contactService.printAllContacts();
-        });
-    }
-
-    /**
-     * Tests retrieval of ID for current contact
-     */
-    @Test
-    void getContactID() {
-        contactService.addContact("599","Lennry",
-                "Balthazor",
-                "4325559275",
-                "333 Happy Place");
-        assertEquals(contactService.getContactID(), "599");
-    }
-
-    /**
-     * Tests retrieval of Last Name of current contact.
-     */
-    @Test
-    void getLastName() {
-        contactService.addContact("499","Lennry",
-                "Balthazor",
-                "4325559275",
-                "333 Happy Place");
-        assertEquals(contactService.getLastName(), "Balthazor");
-    }
-
-    /**
-     * Tests retrieval of First Name of current Contact
-     */
-    @Test
-    void getFirstName() {
-        contactService.addContact("399",
-                "Lennry",
-                "Balthazor",
-                "4325559275",
-                "333 Happy Place");
-        assertEquals(contactService.getFirstName(), "Lennry");
-    }
-
-    /**
-     * Tests retrieval of phone number from current contact
-     */
-    @Test
-    void testGetPhoneNumber() {
-        assertDoesNotThrow(() -> {
-            contactService.addContact("299", "Lennry",
-                    "Balthazor",
-                    "4325559275",
-                    "333 Happy Place");
-        });
-        assertEquals("4325559275", contactService.getContactById(contactService.getContactID()).getPhoneNumber());
-        System.out.println("Phone Number: " + contactService.getPhoneNumber());
-    }
-
-    /**
-     * Tests retrieval of address from current contact.
-     */
-    @Test
-    void testGetAddress() {
-        assertDoesNotThrow(() -> {
-            contactService.addContact("99", "Lennry",
-                    "Balthazor",
-                    "4325559275",
-                    "333 Happy Place");
-            assertEquals(contactService.getContactById("99").getAddress(), "333 Happy Place");
-            System.out.println(contactService.getAddress());
-        });
-        assertThrows(NullPointerException.class, () -> {
-            assertNull(contactService.getContactById("777").getAddress());
         });
     }
 }
