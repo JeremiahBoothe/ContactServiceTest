@@ -3,6 +3,22 @@
 
 ./gradlew build --warning-mode all
 
+./gradlew build --warning-mode --verbose all
+
 ./gradlew test --scan
 
 ./gradlew tasks --all
+
+./gradlew tasks check
+
+./gradlew dependencies
+
+./gradlew help
+
+./gradlew dependencies -U --scan
+
+./gradlew build --stacktrace
+
+./gradlew build --stacktrace
+
+
